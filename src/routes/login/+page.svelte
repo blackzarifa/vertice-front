@@ -6,7 +6,12 @@
 	import * as InputOTP from '$lib/components/ui/input-otp/index.js';
 	import { User, Lock } from '@lucide/svelte';
 	import logo from '$lib/assets/logo.svg';
-	import { login, type LoginResponse } from '$lib/services/auth';
+	import {
+		login,
+		requestOTP,
+		verifyOTP,
+		type LoginResponse
+	} from '$lib/services/auth';
 	import { goto } from '$app/navigation';
 
 	let cpf = $state('');
@@ -17,6 +22,7 @@
 	let showOtp = $state(false);
 	let otpValue = $state('');
 	let loginResponse = $state<LoginResponse>();
+	let invalidOtp = $state(false);
 
 	async function handleLogin(event: Event) {
 		event.preventDefault();
@@ -34,6 +40,7 @@
 			} else {
 				localStorage.removeItem('savedCpf');
 			}
+			await requestOTP(cpf);
 			showOtp = true;
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Erro ao fazer login';
@@ -50,8 +57,9 @@
 		}
 
 		loading = true;
+		invalidOtp = false;
 		try {
-			console.log('OTP submitted:', otpValue);
+			await verifyOTP(cpf, otpValue);
 			if (loginResponse) {
 				sessionStorage.setItem('token', loginResponse.token);
 				sessionStorage.setItem(
@@ -61,7 +69,8 @@
 				goto('/home');
 			}
 		} catch (err) {
-			error = err instanceof Error ? err.message : 'Erro ao verificar código';
+			error = err instanceof Error ? err.message : 'Código inválido';
+			invalidOtp = true;
 		} finally {
 			loading = false;
 		}
@@ -124,7 +133,7 @@
 						{#snippet children({ cells })}
 							<InputOTP.Group>
 								{#each cells as cell}
-									<InputOTP.Slot {cell} />
+									<InputOTP.Slot aria-invalid={invalidOtp} {cell} />
 								{/each}
 							</InputOTP.Group>
 						{/snippet}
@@ -150,6 +159,7 @@
 						showOtp = false;
 						otpValue = '';
 						error = '';
+						invalidOtp = false;
 					}}
 				>
 					Voltar ao login

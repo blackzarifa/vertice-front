@@ -49,3 +49,36 @@ export function clearAuth(): void {
 export function isAuthenticated(): boolean {
 	return !!getAuthToken();
 }
+
+export async function requestOTP(cpf: string): Promise<void> {
+	const response = await fetch(
+		'http://localhost:8080/api/v1/auth/otp/request',
+		{
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ cpf })
+		}
+	);
+
+	if (!response.ok) {
+		const error = await response.json();
+		throw new Error(error.error || 'Failed to request OTP');
+	}
+}
+
+export async function verifyOTP(cpf: string, otp: string): Promise<void> {
+	const response = await fetch('http://localhost:8080/api/v1/auth/otp/verify', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({ cpf, otp })
+	});
+
+	if (!response.ok) {
+		const error = await response.json();
+		throw new Error(error.error || 'Invalid OTP');
+	}
+}
