@@ -1,5 +1,8 @@
 <script lang="ts">
-	import type { HTMLInputAttributes, HTMLInputTypeAttribute } from 'svelte/elements';
+	import type {
+		HTMLInputAttributes,
+		HTMLInputTypeAttribute
+	} from 'svelte/elements';
 	import type { Component } from 'svelte';
 	import { cn, type WithElementRef } from '$lib/utils.js';
 
@@ -8,7 +11,10 @@
 
 	type Props = WithElementRef<
 		Omit<HTMLInputAttributes, 'type'> &
-			({ type: 'file'; files?: FileList } | { type?: InputType; files?: undefined }) & {
+			(
+				| { type: 'file'; files?: FileList }
+				| { type?: InputType; files?: undefined }
+			) & {
 				icon?: LucideIcon;
 				iconClass?: string;
 			}
