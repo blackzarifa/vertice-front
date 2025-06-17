@@ -43,8 +43,9 @@
 										class="flex items-center gap-2"
 									>
 										{#snippet child({ props })}
+											{@const IconComponent = item.icon}
 											<a href={item.href} {...props}>
-												<svelte:component this={item.icon} class="h-5 w-5" />
+												<IconComponent class="h-5 w-5" />
 												<span>{item.label}</span>
 											</a>
 										{/snippet}
@@ -76,7 +77,7 @@
 						/>
 					</div>
 				</div>
-				<div class="flex items-center">
+				<div class="ml-2 flex items-center">
 					<Button variant="ghost">
 						<CircleUser class="h-5 w-5" />
 					</Button>
